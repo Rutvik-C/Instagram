@@ -24,8 +24,9 @@ public class UserFeedAdapter extends ArrayAdapter<String> {
     ArrayList<Bitmap> imageArrayList;
     ArrayList<String> createdOnArrayList;
     ArrayList<Integer> profilePicArrayList;
+    ArrayList<String> captionArrayList;
 
-    public UserFeedAdapter(@NonNull Context context, ArrayList<String> usernameArrayList, ArrayList<Bitmap> imageArrayList, ArrayList<String> createdOnArrayList, ArrayList<Integer> profilePicArrayList) {
+    public UserFeedAdapter(@NonNull Context context, ArrayList<String> usernameArrayList, ArrayList<Bitmap> imageArrayList, ArrayList<String> createdOnArrayList, ArrayList<String> captionArrayList, ArrayList<Integer> profilePicArrayList) {
         super(context, R.layout.user_feed_list_view, usernameArrayList);
 
         this.context = context;
@@ -33,6 +34,7 @@ public class UserFeedAdapter extends ArrayAdapter<String> {
         this.imageArrayList = imageArrayList;
         this.createdOnArrayList = createdOnArrayList;
         this.profilePicArrayList = profilePicArrayList;
+        this.captionArrayList = captionArrayList;
     }
 
     @NonNull
@@ -45,10 +47,12 @@ public class UserFeedAdapter extends ArrayAdapter<String> {
         ImageView imageView = view.findViewById(R.id.imageViewPost);
         TextView textView1 = view.findViewById(R.id.textViewPostCreatedOn);
         ImageView imageView1 = view.findViewById(R.id.imageViewProfilePic);
+        TextView textView2 = view.findViewById(R.id.textViewPostCaption);
 
         textView.setText(usernameArrayList.get(position));
         imageView.setImageBitmap(imageArrayList.get(position));
         textView1.setText(createdOnArrayList.get(position));
+        textView2.setText(captionArrayList.get(position));
         imageView1.setImageResource(profilePicArrayList.get(position));
 
 

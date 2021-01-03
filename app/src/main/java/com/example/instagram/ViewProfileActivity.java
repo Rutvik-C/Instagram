@@ -59,6 +59,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                     ArrayList<String> usernameArrayList = new ArrayList<>();
                     ArrayList<Bitmap> userPostArrayList = new ArrayList<>();
                     ArrayList<String> createdOnArrayList = new ArrayList<>();
+                    ArrayList<String> captionArrayList = new ArrayList<>();
                     ArrayList<Integer> profileImageArrayList = new ArrayList<>();
 
                     ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Images");
@@ -86,12 +87,13 @@ public class ViewProfileActivity extends AppCompatActivity {
                                                 userPostArrayList.add(bitmap);
                                                 usernameArrayList.add(object.getString("username"));
                                                 createdOnArrayList.add(object.getString("dateAndTime"));
+                                                captionArrayList.add(object.getString("caption"));
                                                 profileImageArrayList.add(R.drawable.man);
 
                                                 userListView.setBackgroundColor(0x80ffffff);
 
                                                 Log.i("INFO", usernameArrayList.toString());
-                                                UserFeedAdapter userFeedAdapter = new UserFeedAdapter(ViewProfileActivity.this, usernameArrayList, userPostArrayList, createdOnArrayList, profileImageArrayList);
+                                                UserFeedAdapter userFeedAdapter = new UserFeedAdapter(ViewProfileActivity.this, usernameArrayList, userPostArrayList, createdOnArrayList, captionArrayList, profileImageArrayList);
                                                 userListView.setAdapter(userFeedAdapter);
 
                                             } else {

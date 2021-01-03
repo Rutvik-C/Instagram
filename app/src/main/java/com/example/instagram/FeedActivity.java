@@ -52,64 +52,6 @@ public class FeedActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void getPhoto() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-        startActivityForResult(intent, 0);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 0 && resultCode == RESULT_OK && data != null) {
-            Uri imageLocation = data.getData();
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageLocation);
-                Log.i("Success", "Image ready!");
-
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-
-                byte[] bytes = stream.toByteArray();
-                ParseFile file = new ParseFile("image.png", bytes);
-
-                ParseObject parseObject = new ParseObject("Images");
-                parseObject.put("image", file);
-                parseObject.put("username", ParseUser.getCurrentUser().getUsername());
-
-                @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                Date date = new Date();
-                parseObject.put("dateAndTime", dateFormat.format(date));
-
-                parseObject.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException exception) {
-                        if (exception == null) {
-                            Toast.makeText(FeedActivity.this, "Image Posted Successfully!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Log.i("ERROR", "unable to upload " + exception);
-                        }
-                    }
-                });
-
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                getPhoto();
-            }
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -122,11 +64,8 @@ public class FeedActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId() == R.id.shareButton) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, 1);
-            } else {
-                getPhoto();
-            }
+            Intent intent = new Intent(this, UploadImageActivity.class);
+            startActivity(intent);
 
         } else if (item.getItemId() == R.id.logOut) {
             ParseUser.logOut();
@@ -156,6 +95,7 @@ public class FeedActivity extends AppCompatActivity {
         ArrayList<Bitmap> userPostArrayList = new ArrayList<>();
         ArrayList<String> createdOnArrayList = new ArrayList<>();
         ArrayList<Integer> profileImageArrayList = new ArrayList<>();
+        ArrayList<String> captionArrayList = new ArrayList<>();
 
         TextView textView = findViewById(R.id.textView2);
         textView.setText(ParseUser.getCurrentUser().getUsername());
@@ -184,10 +124,11 @@ public class FeedActivity extends AppCompatActivity {
                                     userPostArrayList.add(bitmap);
                                     usernameArrayList.add(object.getString("username"));
                                     createdOnArrayList.add(object.getString("dateAndTime"));
+                                    captionArrayList.add(object.getString("caption"));
                                     profileImageArrayList.add(R.drawable.man);
 
                                     Log.i("INFO", usernameArrayList.toString());
-                                    UserFeedAdapter userFeedAdapter = new UserFeedAdapter(FeedActivity.this, usernameArrayList, userPostArrayList, createdOnArrayList, profileImageArrayList);
+                                    UserFeedAdapter userFeedAdapter = new UserFeedAdapter(FeedActivity.this, usernameArrayList, userPostArrayList, createdOnArrayList, captionArrayList, profileImageArrayList);
                                     feedListView.setAdapter(userFeedAdapter);
 
                                 } else {
@@ -204,19 +145,3 @@ public class FeedActivity extends AppCompatActivity {
 
     }
 }
-
-//    The answer given by Bhavesh to his own question is a perfect answer.
-//
-//        The only additional point is:
-//
-//        1. In config.json of parse server, we have to set the "publicServerURL" to the same address as given in "serverURL" in the same file. (Public IP address issued by the EC2 for the instance - or equivalent cloud server).
-//
-//        2. Now we have to restart the parse server (not the EC2 server)
-//
-//        3. In case we stop the EC2 instance and re-start; the Public IP allotted for the server may change. In which case we have to change the "publicServerURL" accordingly.
-//
-//        This will ensure that the images are accessible both in the chrome browser as well as the app installed in the android phone.
-//
-//        Hope this saves time for some people.
-//
-//        Thank you

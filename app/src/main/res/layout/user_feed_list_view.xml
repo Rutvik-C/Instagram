@@ -8,7 +8,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="510dp"
+        android:layout_height="560dp"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="146dp">
 
@@ -49,7 +49,7 @@
             android:id="@+id/textViewPostCreatedOn"
             android:layout_width="300dp"
             android:layout_height="25dp"
-            android:layout_below="@+id/imageViewPost"
+            android:layout_below="@+id/textViewPostCaption"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_marginStart="10dp"
@@ -71,5 +71,23 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
             app:srcCompat="@drawable/man" />
+
+        <TextView
+            android:id="@+id/textViewPostCaption"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@+id/imageViewPost"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:text="caption"
+            android:textColor="#000000"
+            android:textSize="18sp" />
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
