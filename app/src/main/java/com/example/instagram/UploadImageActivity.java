@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -17,6 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -38,6 +40,15 @@ public class UploadImageActivity extends AppCompatActivity {
     Bitmap bitmap;
     ImageView imageViewPost;
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            Intent intent = new Intent(UploadImageActivity.this, FeedActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
     public void getPhoto() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -131,10 +142,19 @@ public class UploadImageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_upload_image);
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.custom_action_bar);
-
+        getSupportActionBar().setCustomView(R.layout.custom_action_bar_with_back);
+        AppCompatImageView appCompatImageView = findViewById(R.id.imageViewBack);
+        appCompatImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(UploadImageActivity.this, FeedActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
         AppCompatTextView appCompatTextView = findViewById(R.id.title1);
-        appCompatTextView.setText("Post Image");
+        String temp = "Post Image";
+        appCompatTextView.setText(temp);
 
         imageViewPost = findViewById(R.id.imageViewPostAct);
 

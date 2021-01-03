@@ -2,6 +2,8 @@ package com.example.instagram;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -10,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +33,16 @@ import java.util.List;
 public class ViewProfileActivity extends AppCompatActivity {
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            Intent intent = new Intent(ViewProfileActivity.this, FeedActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_profile);
@@ -38,12 +51,31 @@ public class ViewProfileActivity extends AppCompatActivity {
         Button buttonEditProfile = findViewById(R.id.buttonEditProfile);
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.custom_action_bar);
+        getSupportActionBar().setCustomView(R.layout.custom_action_bar_with_back);
+        AppCompatImageView appCompatImageView = findViewById(R.id.imageViewBack);
+        appCompatImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ViewProfileActivity.this, FeedActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         Intent intent = getIntent();
         boolean isUser = intent.getBooleanExtra("flag", false);
         String userName = intent.getStringExtra("username");
 
+        AppCompatTextView appCompatTextView = findViewById(R.id.title1);
+        String temp;
+        if (isUser) {
+            buttonEditProfile.setVisibility(View.VISIBLE);
+            temp = "Your Profile";
+        } else {
+            buttonEditProfile.setVisibility(View.INVISIBLE);
+            temp = "User Profile";
+        }
+        appCompatTextView.setText(temp);
 
         ParseQuery<ParseUser> userParseQuery = ParseUser.getQuery();
         userParseQuery.whereEqualTo("username", userName);
@@ -117,14 +149,5 @@ public class ViewProfileActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-        if (isUser) {
-            buttonEditProfile.setVisibility(View.VISIBLE);
-        } else {
-            buttonEditProfile.setVisibility(View.INVISIBLE);
-        }
-
-
     }
 }

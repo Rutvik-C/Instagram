@@ -2,6 +2,8 @@ package com.example.instagram;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +11,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -31,6 +34,15 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
     ListView listViewUsers;
     EditText searchUserEditText;
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            Intent intent = new Intent(UserActivity.this, FeedActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
     @Override
     public void onClick(View v) {
@@ -44,7 +56,20 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_user);
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.custom_action_bar);
+        getSupportActionBar().setCustomView(R.layout.custom_action_bar_with_back);
+        AppCompatImageView appCompatImageView = findViewById(R.id.imageViewBack);
+        appCompatImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(UserActivity.this, FeedActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        AppCompatTextView appCompatTextView = findViewById(R.id.title1);
+        String temp = "Search Users";
+        appCompatTextView.setText(temp);
+
 
         listViewUsers = findViewById(R.id.listViewUsers);
         searchUserEditText = findViewById(R.id.editTextSearchUsers);

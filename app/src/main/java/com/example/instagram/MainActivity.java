@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     EditText editTextUsername, editTextEmail, editTextPasswordLogin, editTextPasswordSignup, editTextPasswordSignupAgain;
     boolean isLoginOnScreen;
 
-
     public void launchUserActivity() {
         Intent intent = new Intent(MainActivity.this, FeedActivity.class);
 

@@ -50,6 +50,7 @@ public class FeedActivity extends AppCompatActivity {
         intent.putExtra("username", ParseUser.getCurrentUser().getUsername());
 
         startActivity(intent);
+        finish();
     }
 
     @Override
@@ -77,6 +78,7 @@ public class FeedActivity extends AppCompatActivity {
             Intent intent = new Intent(this, UserActivity.class);
             startActivity(intent);
         }
+        finish();
 
         return super.onOptionsItemSelected(item);
     }
