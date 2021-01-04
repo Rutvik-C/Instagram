@@ -30,7 +30,7 @@ public class RequestActivity extends AppCompatActivity {
 
     ArrayList<String> pendingRequests;
     MyArrayAdapter myArrayAdapter;
-    ParseObject currUserSocial;
+    ParseObject currUserSocial;  // this is the social class of current user (getCurrentUser)
 
     public void acceptOrReject(View view) {
         TextView textView = (TextView) view;

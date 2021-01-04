@@ -35,7 +35,7 @@ public class ViewProfileActivity extends AppCompatActivity {
 
     Button buttonFollowUnfollow;
     ParseUser currentUser;
-    ParseObject currentUserSocial;
+    ParseObject currentUserSocial;  // this is the user whose profile is being viewed
 
     public void saveParseObjectInBackground(ParseObject parseObject, String message) {
         // Saves the given object and updates the button text
@@ -68,6 +68,42 @@ public class ViewProfileActivity extends AppCompatActivity {
 
         } else if (buttonFollowUnfollow.getText().equals("following")) {
             // unfollow algo
+            // remove target user from getCurrentUsers Social follows
+            // remove getCurrentUsers Social from target users followers
+
+            ParseQuery<ParseObject> objectParseQuery = new ParseQuery<ParseObject>("Social");
+            objectParseQuery.whereEqualTo("username", ParseUser.getCurrentUser().getUsername());
+            objectParseQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> objects, ParseException exception) {
+                    if (exception == null && objects != null) {
+                        objects.get(0).getList("follows").remove(currentUser.getUsername());
+                        List<String> tempList = objects.get(0).getList("follows");
+                        objects.get(0).remove("follows");
+                        objects.get(0).put("follows", tempList);
+
+                        objects.get(0).saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException exception1) {
+                                if (exception1 == null) {
+                                    currentUserSocial.getList("followers").remove(ParseUser.getCurrentUser().getUsername());
+                                    List<String> tempList = currentUserSocial.getList("followers");
+                                    currentUserSocial.remove("followers");
+                                    currentUserSocial.put("followers", tempList);
+
+                                    saveParseObjectInBackground(currentUserSocial, "follow");
+
+                                } else {
+                                    Toast.makeText(ViewProfileActivity.this, "Task Failed", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+                    } else {
+                        Toast.makeText(ViewProfileActivity.this, "Failed to find your social account", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
 
         } else {
             // take back request algo
@@ -217,10 +253,6 @@ public class ViewProfileActivity extends AppCompatActivity {
                             }
                         }
                     });
-
-
-
-
                 } else {
                     Toast.makeText(ViewProfileActivity.this, "Failed to load Profile", Toast.LENGTH_SHORT).show();
                     Log.i("ERROR", "" + exception);
