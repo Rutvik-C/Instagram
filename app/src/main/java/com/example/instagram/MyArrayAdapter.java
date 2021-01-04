@@ -19,13 +19,15 @@ public class MyArrayAdapter extends ArrayAdapter<String> {
     Context context;
     ArrayList<String> usernameArrayList;
     ArrayList<Integer> imageArrayList;
+    boolean isFolList;
 
-    public MyArrayAdapter(@NonNull Context context, ArrayList<String> usernameArrayList, ArrayList<Integer> imageArrayList) {
+    public MyArrayAdapter(@NonNull Context context, ArrayList<String> usernameArrayList, ArrayList<Integer> imageArrayList, boolean isFolList) {
         super(context, R.layout.custom_list_view, usernameArrayList);
 
         this.context = context;
         this.usernameArrayList = usernameArrayList;
         this.imageArrayList = imageArrayList;
+        this.isFolList = isFolList;
     }
 
 
@@ -39,8 +41,18 @@ public class MyArrayAdapter extends ArrayAdapter<String> {
         ImageView imageView = view.findViewById(R.id.imageViewProfile);
 
         textView.setText(usernameArrayList.get(position));
-        imageView.setImageResource(R.drawable.man);
         imageView.setImageResource(imageArrayList.get(position));
+
+        if (isFolList) {
+            TextView textView1 = view.findViewById(R.id.textViewfollow);
+            TextView textView2 = view.findViewById(R.id.textViewReject);
+
+            textView1.setTag(usernameArrayList.get(position));
+            textView2.setTag(usernameArrayList.get(position));
+
+            textView1.setVisibility(View.VISIBLE);
+            textView2.setVisibility(View.VISIBLE);
+        }
 
         return view;
     }

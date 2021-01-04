@@ -76,7 +76,7 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
 
         ArrayList<String> users = new ArrayList<>();
         ArrayList<Integer> images = new ArrayList<>();
-        MyArrayAdapter myArrayAdapter = new MyArrayAdapter(getApplicationContext(), users, images);
+        MyArrayAdapter myArrayAdapter = new MyArrayAdapter(getApplicationContext(), users, images, false);
 
         listViewUsers.setAdapter(myArrayAdapter);
 
@@ -86,9 +86,6 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.i("on", s.toString());
-
-
                 ParseQuery<ParseUser> userParseQuery = ParseUser.getQuery();
                 userParseQuery.whereNotEqualTo("username", ParseUser.getCurrentUser().getUsername());
                 userParseQuery.whereStartsWith("username", s.toString());

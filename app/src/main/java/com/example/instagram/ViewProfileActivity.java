@@ -26,11 +26,59 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ViewProfileActivity extends AppCompatActivity {
+
+    Button buttonFollowUnfollow;
+    ParseUser currentUser;
+    ParseObject currentUserSocial;
+
+    public void saveParseObjectInBackground(ParseObject parseObject, String message) {
+        // Saves the given object and updates the button text
+
+        parseObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException exception) {
+                if (exception == null) {
+                    buttonFollowUnfollow.setText(message);
+                } else {
+                    Toast.makeText(ViewProfileActivity.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.i("REQ ERR", exception.toString());
+                }
+            }
+        });
+    }
+
+    public void updateProfile(View view) {
+        Toast.makeText(this, "Will be available in future updates", Toast.LENGTH_SHORT).show();
+    }
+
+    public void followUnfollow(View view) {
+        // Updates database according to follow unfollow requests
+
+        if (buttonFollowUnfollow.getText().equals("follow")) {
+            // send follow request algo
+
+            currentUserSocial.add("pendingRequests", ParseUser.getCurrentUser().getUsername());
+            saveParseObjectInBackground(currentUserSocial, "requested");
+
+        } else if (buttonFollowUnfollow.getText().equals("following")) {
+            // unfollow algo
+
+        } else {
+            // take back request algo
+            currentUserSocial.getList("pendingRequests").remove(ParseUser.getCurrentUser().getUsername());
+            List<String> tempList = currentUserSocial.getList("pendingRequests");
+            currentUserSocial.remove("pendingRequests");
+            currentUserSocial.put("pendingRequests", tempList);
+
+            saveParseObjectInBackground(currentUserSocial, "follow");
+        }
+    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -49,7 +97,9 @@ public class ViewProfileActivity extends AppCompatActivity {
 
         EditText editTextProfileUsername = findViewById(R.id.editTextProfileUsername);
         Button buttonEditProfile = findViewById(R.id.buttonEditProfile);
+        buttonFollowUnfollow = findViewById(R.id.buttonFollowUnfollow);
 
+        // Action bar setup
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.custom_action_bar_with_back);
         AppCompatImageView appCompatImageView = findViewById(R.id.imageViewBack);
@@ -62,21 +112,26 @@ public class ViewProfileActivity extends AppCompatActivity {
             }
         });
 
+        // Fetching data
         Intent intent = getIntent();
         boolean isUser = intent.getBooleanExtra("flag", false);
         String userName = intent.getStringExtra("username");
 
+        // Title based on owner or viewer of account
         AppCompatTextView appCompatTextView = findViewById(R.id.title1);
         String temp;
         if (isUser) {
             buttonEditProfile.setVisibility(View.VISIBLE);
+            buttonFollowUnfollow.setVisibility(View.INVISIBLE);
             temp = "Your Profile";
         } else {
             buttonEditProfile.setVisibility(View.INVISIBLE);
+            buttonFollowUnfollow.setVisibility(View.VISIBLE);
             temp = "User Profile";
         }
         appCompatTextView.setText(temp);
 
+        // Getting the user info
         ParseQuery<ParseUser> userParseQuery = ParseUser.getQuery();
         userParseQuery.whereEqualTo("username", userName);
 
@@ -84,8 +139,31 @@ public class ViewProfileActivity extends AppCompatActivity {
             @Override
             public void done(List<ParseUser> objects, ParseException exception) {
                 if (exception == null && objects != null) {
-                    editTextProfileUsername.setText(objects.get(0).getUsername());
+                    currentUser = objects.get(0);
+                    editTextProfileUsername.setText(currentUser.getUsername());
 
+                    ParseQuery<ParseObject> objectParseQuery = new ParseQuery<ParseObject>("Social");
+                    objectParseQuery.whereEqualTo("username", currentUser.getUsername());
+                    objectParseQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException exception1) {
+                            if (exception1 == null && objects != null && objects.size() > 0) {
+                                currentUserSocial = objects.get(0);
+
+                                String text;
+                                if (currentUserSocial.getList("followers").contains(ParseUser.getCurrentUser().getUsername())) {
+                                    text = "following";
+                                } else if (currentUserSocial.getList("pendingRequests").contains(ParseUser.getCurrentUser().getUsername())) {
+                                    text = "requested";
+                                } else {
+                                    text = "follow";
+                                }
+                                buttonFollowUnfollow.setText(text);
+                            }
+                        }
+                    });
+
+                    // Getting user posts
                     ListView userListView = findViewById(R.id.specificPostListView);
                     
                     ArrayList<String> usernameArrayList = new ArrayList<>();

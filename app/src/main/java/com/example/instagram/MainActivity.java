@@ -22,8 +22,12 @@ import android.widget.Toast;
 import com.parse.LogInCallback;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnKeyListener {
 
@@ -87,8 +91,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 public void done(ParseException exception) {
                     if (exception == null) {
                         Log.i("Success", "sign up successful");
+                        ParseObject parseObject = new ParseObject("Social");
+                        parseObject.put("username", username);
+                        parseObject.put("pendingRequests", new ArrayList<String>());
+                        parseObject.put("follows", new ArrayList<String>());
+                        parseObject.put("followers", new ArrayList<String>());
 
-                        launchUserActivity();
+                        parseObject.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException ex) {
+                                if (ex == null) {
+                                    launchUserActivity();
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Failed to Sign In\nTry again after some time", Toast.LENGTH_SHORT).show();
+                                    Log.i("Failed", "sign up failed " + ex);
+                                }
+                            }
+                        });
+
                     } else {
                         Toast.makeText(MainActivity.this, "Failed to Sign In\nTry again after some time", Toast.LENGTH_SHORT).show();
                         Log.i("Failed", "sign up failed " + exception);
