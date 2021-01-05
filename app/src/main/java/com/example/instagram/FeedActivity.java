@@ -111,48 +111,61 @@ public class FeedActivity extends AppCompatActivity {
         TextView textView = findViewById(R.id.textView2);
         textView.setText(ParseUser.getCurrentUser().getUsername());
 
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Images");
-        parseQuery.whereNotEqualTo("username", ParseUser.getCurrentUser().getUsername());
-        parseQuery.addDescendingOrder("createdAt");
-
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+        ArrayList<String> arrayList = new ArrayList<>();
+        ParseQuery<ParseObject> objectParseQuery = new ParseQuery<ParseObject>("Social");
+        objectParseQuery.whereEqualTo("username", ParseUser.getCurrentUser().getUsername());
+        objectParseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException exception) {
                 if (exception == null && objects != null) {
-                    Log.i("INFO", "Here1");
+                    ParseObject parseObject = objects.get(0);
 
-                    for (ParseObject object : objects) {
-                        Log.i("Loop", "In loop now...");
-
-                        ParseFile file = (ParseFile) object.get("image");
-                        file.getDataInBackground(new GetDataCallback() {
-                            @Override
-                            public void done(byte[] data, ParseException exception1) {
-                                if (exception1 == null && data != null) {
-                                    Log.i("Image", "Got an image");
-
-                                    Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                                    userPostArrayList.add(bitmap);
-                                    usernameArrayList.add(object.getString("username"));
-                                    createdOnArrayList.add(object.getString("dateAndTime"));
-                                    captionArrayList.add(object.getString("caption"));
-                                    profileImageArrayList.add(R.drawable.man);
-
-                                    Log.i("INFO", usernameArrayList.toString());
-                                    UserFeedAdapter userFeedAdapter = new UserFeedAdapter(FeedActivity.this, usernameArrayList, userPostArrayList, createdOnArrayList, captionArrayList, profileImageArrayList);
-                                    feedListView.setAdapter(userFeedAdapter);
-
-                                } else {
-                                    Log.i("Error In", "" + exception1);
-                                }
-                            }
-                        });
+                    for (Object username : parseObject.getList("follows")) {
+                        arrayList.add(username.toString());
                     }
 
+                    ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Images");
+                    parseQuery.whereNotEqualTo("username", ParseUser.getCurrentUser().getUsername());
+                    parseQuery.whereContainedIn("username", arrayList);
+                    parseQuery.addDescendingOrder("createdAt");
 
+                    parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException exception) {
+                            if (exception == null && objects != null) {
+
+                                for (ParseObject object : objects) {
+
+                                    ParseFile file = (ParseFile) object.get("image");
+                                    file.getDataInBackground(new GetDataCallback() {
+                                        @Override
+                                        public void done(byte[] data, ParseException exception1) {
+                                            if (exception1 == null && data != null) {
+
+                                                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                                userPostArrayList.add(bitmap);
+                                                usernameArrayList.add(object.getString("username"));
+                                                createdOnArrayList.add(object.getString("dateAndTime"));
+                                                captionArrayList.add(object.getString("caption"));
+                                                profileImageArrayList.add(R.drawable.man);
+
+                                                UserFeedAdapter userFeedAdapter = new UserFeedAdapter(FeedActivity.this, usernameArrayList, userPostArrayList, createdOnArrayList, captionArrayList, profileImageArrayList);
+                                                feedListView.setAdapter(userFeedAdapter);
+
+                                            } else {
+                                                Log.i("Error In", "" + exception1);
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    Toast.makeText(FeedActivity.this, "Unable to find your social account\n" + exception.getMessage(), Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
-
     }
 }

@@ -8,22 +8,77 @@ import androidx.appcompat.widget.AppCompatTextView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FriendsActivity extends AppCompatActivity {
 
     View followerLine;
     View followingLine;
+    ListView listView;
+    ArrayList<String> arrayListUsername;
+    ArrayList<Integer> arrayListImages;
+    MyArrayAdapter myArrayAdapter;
+    TextView textViewFollowers, textViewFollowing;
+
+
+    private void fetchListAndUpdateListView(String people) {
+        ParseQuery<ParseObject> objectParseQuery = new ParseQuery<ParseObject>("Social");
+        objectParseQuery.whereEqualTo("username", ParseUser.getCurrentUser().getUsername());
+        objectParseQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException exception) {
+                if (exception == null && objects != null) {
+                    ParseObject parseObject = objects.get(0);
+
+                    String text = String.valueOf(parseObject.getList(people).size());
+                    if (people.equals("followers")) {
+                        textViewFollowers.setText(text);
+                    } else {
+                        textViewFollowing.setText(text);
+                    }
+
+                    arrayListUsername.clear();
+                    arrayListImages.clear();
+                    for (Object username : parseObject.getList(people)) {
+                        arrayListUsername.add(username.toString());
+                        arrayListImages.add(R.drawable.man);
+                    }
+                    myArrayAdapter.notifyDataSetChanged();
+
+                } else {
+                    Toast.makeText(FriendsActivity.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+    }
 
     public void showFollowers(View view) {
         followerLine.setVisibility(View.VISIBLE);
         followingLine.setVisibility(View.INVISIBLE);
 
+        fetchListAndUpdateListView("followers");
 
     }
 
     public void showFollowing(View view) {
         followerLine.setVisibility(View.INVISIBLE);
         followingLine.setVisibility(View.VISIBLE);
+
+        fetchListAndUpdateListView("follows");
+
     }
 
     @Override
@@ -48,5 +103,28 @@ public class FriendsActivity extends AppCompatActivity {
 
         followerLine = findViewById(R.id.followersLine);
         followingLine = findViewById(R.id.followingLine);
+
+        textViewFollowers = findViewById(R.id.textView4);
+        textViewFollowing = findViewById(R.id.textView5);
+
+        listView = findViewById(R.id.listView);
+        arrayListUsername = new ArrayList<>();
+        arrayListImages = new ArrayList<>();
+        myArrayAdapter = new MyArrayAdapter(FriendsActivity.this, arrayListUsername, arrayListImages, false);
+        listView.setAdapter(myArrayAdapter);
+
+        showFollowers(listView);
+        showFollowing(listView);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(FriendsActivity.this, ViewProfileActivity.class);
+                intent.putExtra("flag", false);
+                intent.putExtra("username", arrayListUsername.get(position));
+
+                startActivity(intent);
+            }
+        });
     }
 }
