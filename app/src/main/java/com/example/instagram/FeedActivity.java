@@ -79,9 +79,14 @@ public class FeedActivity extends AppCompatActivity {
             startActivity(intent);
 
         } else if (item.getItemId() == R.id.userRequests) {
-        Intent intent = new Intent(this, RequestActivity.class);
-        startActivity(intent);
-    }
+            Intent intent = new Intent(this, RequestActivity.class);
+            startActivity(intent);
+
+        } else if (item.getItemId() == R.id.friends) {
+            Intent intent = new Intent(this, FriendsActivity.class);
+            startActivity(intent);
+
+        }
         finish();
 
         return super.onOptionsItemSelected(item);

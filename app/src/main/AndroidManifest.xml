@@ -16,7 +16,8 @@
         android:theme="@style/Theme.Instagram"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <activity android:name=".RequestActivity"></activity>
+        <activity android:name=".FriendsActivity"></activity>
+        <activity android:name=".RequestActivity" />
         <activity android:name=".UploadImageActivity" />
         <activity android:name=".ViewProfileActivity" />
         <activity android:name=".FeedActivity" />

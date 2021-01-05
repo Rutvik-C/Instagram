@@ -2,6 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="Post an Image" android:id="@+id/shareButton"/>
     <item android:title="Follow Requests" android:id="@+id/userRequests"/>
+    <item android:title="Friends" android:id="@+id/friends"/>
     <item android:title="Search Users" android:id="@+id/userButton"/>
     <item android:title="Logout" android:id="@+id/logOut"/>
 </menu>
