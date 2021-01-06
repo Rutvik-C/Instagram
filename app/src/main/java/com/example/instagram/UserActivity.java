@@ -1,10 +1,12 @@
 package com.example.instagram;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +14,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -21,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -69,6 +74,42 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
         AppCompatTextView appCompatTextView = findViewById(R.id.title1);
         String temp = "Search Users";
         appCompatTextView.setText(temp);
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_bar);
+        Menu menu = bottomNavigationView.getMenu();
+        MenuItem menuItem = menu.getItem(1);
+        menuItem.setChecked(true);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @SuppressLint("NonConstantResourceId")
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.home:
+                        Intent intent0 = new Intent(UserActivity.this, FeedActivity.class);
+                        startActivity(intent0);
+                        break;
+                    case R.id.search:
+                        break;
+                    case R.id.post:
+                        Intent intent1 = new Intent(UserActivity.this, UploadImageActivity.class);
+                        startActivity(intent1);
+                        break;
+                    case R.id.activity:
+                        Intent intent2 = new Intent(UserActivity.this, RequestActivity.class);
+                        startActivity(intent2);
+                        break;
+                    case R.id.user:
+                        Intent intent3 = new Intent(UserActivity.this, ViewProfileActivity.class);
+                        intent3.putExtra("flag", true);
+                        intent3.putExtra("username", ParseUser.getCurrentUser().getUsername());
+
+                        startActivity(intent3);
+                        break;
+                }
+
+                return false;
+            }
+        });
 
 
         listViewUsers = findViewById(R.id.listViewUsers);

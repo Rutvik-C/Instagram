@@ -1,20 +1,25 @@
 package com.example.instagram;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -112,6 +117,43 @@ public class RequestActivity extends AppCompatActivity {
         AppCompatTextView appCompatTextView = findViewById(R.id.title1);
         String temp = "Follow Requests";
         appCompatTextView.setText(temp);
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_bar);
+        Menu menu = bottomNavigationView.getMenu();
+        MenuItem menuItem = menu.getItem(3);
+        menuItem.setChecked(true);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @SuppressLint("NonConstantResourceId")
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.home:
+                        Intent intent0 = new Intent(RequestActivity.this, FeedActivity.class);
+                        startActivity(intent0);
+                        break;
+                    case R.id.search:
+                        Intent intent1 = new Intent(RequestActivity.this, UserActivity.class);
+                        startActivity(intent1);
+                        break;
+                    case R.id.post:
+                        Intent intent2 = new Intent(RequestActivity.this, UploadImageActivity.class);
+                        startActivity(intent2);
+                        break;
+                    case R.id.activity:
+                        break;
+                    case R.id.user:
+                        Intent intent3 = new Intent(RequestActivity.this, ViewProfileActivity.class);
+                        intent3.putExtra("flag", true);
+                        intent3.putExtra("username", ParseUser.getCurrentUser().getUsername());
+
+                        startActivity(intent3);
+                        break;
+                }
+
+                return false;
+            }
+        });
+
 
         ListView listViewUserRequest = findViewById(R.id.listViewUserRequest);
         pendingRequests = new ArrayList<>();

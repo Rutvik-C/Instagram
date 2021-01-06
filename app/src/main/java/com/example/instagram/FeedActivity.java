@@ -25,6 +25,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
 import com.parse.Parse;
@@ -44,53 +45,36 @@ import java.util.List;
 
 public class FeedActivity extends AppCompatActivity {
 
-    public void viewProfile(View view) {
-        Intent intent = new Intent(this, ViewProfileActivity.class);
-        intent.putExtra("flag", true);
-        intent.putExtra("username", ParseUser.getCurrentUser().getUsername());
-
-        startActivity(intent);
-        finish();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu, menu);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        if (item.getItemId() == R.id.shareButton) {
-            Intent intent = new Intent(this, UploadImageActivity.class);
-            startActivity(intent);
-
-        } else if (item.getItemId() == R.id.logOut) {
-            ParseUser.logOut();
-
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-
-        } else if (item.getItemId() == R.id.userButton) {
-            Intent intent = new Intent(this, UserActivity.class);
-            startActivity(intent);
-
-        } else if (item.getItemId() == R.id.userRequests) {
-            Intent intent = new Intent(this, RequestActivity.class);
-            startActivity(intent);
-
-        } else if (item.getItemId() == R.id.friends) {
-            Intent intent = new Intent(this, FriendsActivity.class);
-            startActivity(intent);
-
-        }
-        finish();
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//
+//        if (item.getItemId() == R.id.shareButton) {
+//            Intent intent = new Intent(this, UploadImageActivity.class);
+//            startActivity(intent);
+//
+//        } else if (item.getItemId() == R.id.logOut) {
+//            ParseUser.logOut();
+//
+//            Intent intent = new Intent(this, MainActivity.class);
+//            startActivity(intent);
+//
+//        } else if (item.getItemId() == R.id.userButton) {
+//            Intent intent = new Intent(this, UserActivity.class);
+//            startActivity(intent);
+//
+//        } else if (item.getItemId() == R.id.userRequests) {
+//            Intent intent = new Intent(this, RequestActivity.class);
+//            startActivity(intent);
+//
+//        } else if (item.getItemId() == R.id.friends) {
+//            Intent intent = new Intent(this, FriendsActivity.class);
+//            startActivity(intent);
+//
+//        }
+//        finish();
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,8 +92,43 @@ public class FeedActivity extends AppCompatActivity {
         ArrayList<Integer> profileImageArrayList = new ArrayList<>();
         ArrayList<String> captionArrayList = new ArrayList<>();
 
-        TextView textView = findViewById(R.id.textView2);
-        textView.setText(ParseUser.getCurrentUser().getUsername());
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_bar);
+        Menu menu = bottomNavigationView.getMenu();
+        MenuItem menuItem = menu.getItem(0);
+        menuItem.setChecked(true);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @SuppressLint("NonConstantResourceId")
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.home:
+                        break;
+                    case R.id.search:
+                        Intent intent0 = new Intent(FeedActivity.this, UserActivity.class);
+                        startActivity(intent0);
+                        break;
+                    case R.id.post:
+                        Intent intent1 = new Intent(FeedActivity.this, UploadImageActivity.class);
+                        startActivity(intent1);
+                        break;
+                    case R.id.activity:
+                        Intent intent2 = new Intent(FeedActivity.this, RequestActivity.class);
+                        startActivity(intent2);
+                        break;
+                    case R.id.user:
+                        Intent intent3 = new Intent(FeedActivity.this, ViewProfileActivity.class);
+                        intent3.putExtra("flag", true);
+                        intent3.putExtra("username", ParseUser.getCurrentUser().getUsername());
+
+                        startActivity(intent3);
+                        break;
+                }
+
+                return false;
+            }
+        });
+
 
         ArrayList<String> arrayList = new ArrayList<>();
         ParseQuery<ParseObject> objectParseQuery = new ParseQuery<ParseObject>("Social");

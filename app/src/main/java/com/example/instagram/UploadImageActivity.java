@@ -19,11 +19,14 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -155,6 +158,43 @@ public class UploadImageActivity extends AppCompatActivity {
         AppCompatTextView appCompatTextView = findViewById(R.id.title1);
         String temp = "Post Image";
         appCompatTextView.setText(temp);
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_bar);
+        Menu menu = bottomNavigationView.getMenu();
+        MenuItem menuItem = menu.getItem(2);
+        menuItem.setChecked(true);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @SuppressLint("NonConstantResourceId")
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.home:
+                        Intent intent0 = new Intent(UploadImageActivity.this, FeedActivity.class);
+                        startActivity(intent0);
+                        break;
+                    case R.id.search:
+                        Intent intent1 = new Intent(UploadImageActivity.this, UserActivity.class);
+                        startActivity(intent1);
+                        break;
+                    case R.id.post:
+                        break;
+                    case R.id.activity:
+                        Intent intent2 = new Intent(UploadImageActivity.this, RequestActivity.class);
+                        startActivity(intent2);
+                        break;
+                    case R.id.user:
+                        Intent intent3 = new Intent(UploadImageActivity.this, ViewProfileActivity.class);
+                        intent3.putExtra("flag", true);
+                        intent3.putExtra("username", ParseUser.getCurrentUser().getUsername());
+
+                        startActivity(intent3);
+                        break;
+                }
+
+                return false;
+            }
+        });
+
 
         imageViewPost = findViewById(R.id.imageViewPostAct);
 
