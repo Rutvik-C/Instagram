@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -150,12 +151,12 @@ public class ViewProfileActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_profile);
 
-        EditText editTextProfileUsername = findViewById(R.id.editTextProfileUsername);
         Button buttonEditProfile = findViewById(R.id.buttonEditProfile);
         buttonFollowUnfollow = findViewById(R.id.buttonFollowUnfollow);
 
@@ -212,17 +213,15 @@ public class ViewProfileActivity extends AppCompatActivity {
 
         // Title based on owner or viewer of account
         AppCompatTextView appCompatTextView = findViewById(R.id.title1);
-        String temp;
         if (isUser) {
             buttonEditProfile.setVisibility(View.VISIBLE);
             buttonFollowUnfollow.setVisibility(View.INVISIBLE);
-            temp = "Your Profile";
         } else {
             buttonEditProfile.setVisibility(View.INVISIBLE);
             buttonFollowUnfollow.setVisibility(View.VISIBLE);
-            temp = "User Profile";
         }
-        appCompatTextView.setText(temp);
+        appCompatTextView.setText(" " + userName);
+
 
         // Getting the user info
         ParseQuery<ParseUser> userParseQuery = ParseUser.getQuery();
@@ -233,7 +232,6 @@ public class ViewProfileActivity extends AppCompatActivity {
             public void done(List<ParseUser> objects, ParseException exception) {
                 if (exception == null && objects != null) {
                     currentUser = objects.get(0);
-                    editTextProfileUsername.setText(currentUser.getUsername());
 
                     ParseQuery<ParseObject> objectParseQuery = new ParseQuery<ParseObject>("Social");
                     objectParseQuery.whereEqualTo("username", currentUser.getUsername());
@@ -244,11 +242,10 @@ public class ViewProfileActivity extends AppCompatActivity {
                                 currentUserSocial = objects.get(0);
 
                                 String text;
-                                if (currentUserSocial.getList("followers").contains(ParseUser.getCurrentUser().getUsername())) {
+                                if (currentUserSocial.getList("followers").contains(ParseUser.getCurrentUser().getUsername()) || isUser) {
                                     text = "following";
 
                                     // Getting user posts
-
                                     ListView userListView = findViewById(R.id.specificPostListView);
 
                                     ArrayList<String> usernameArrayList = new ArrayList<>();
@@ -307,6 +304,24 @@ public class ViewProfileActivity extends AppCompatActivity {
                                     text = "follow";
                                 }
                                 buttonFollowUnfollow.setText(text);
+
+
+                                ParseQuery<ParseObject> objectParseQuery = new ParseQuery<ParseObject>("Social");
+                                objectParseQuery.whereEqualTo("username", userName);
+                                objectParseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                    @Override
+                                    public void done(List<ParseObject> objects, ParseException exception) {
+                                        if (exception == null && objects != null) {
+                                            ParseObject parseObject = objects.get(0);
+
+                                            TextView textView = findViewById(R.id.textViewfollowersNumber);
+                                            textView.setText(String.valueOf(parseObject.getList("followers").size()));
+                                            TextView textView1 = findViewById(R.id.textViewFollowingNumber);
+                                            textView1.setText(String.valueOf(parseObject.getList("follows").size()));
+                                        }
+                                    }
+                                });
+
                             }
                         }
                     });

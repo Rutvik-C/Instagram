@@ -104,8 +104,8 @@ public class FriendsActivity extends AppCompatActivity {
         followerLine = findViewById(R.id.followersLine);
         followingLine = findViewById(R.id.followingLine);
 
-        textViewFollowers = findViewById(R.id.textView4);
-        textViewFollowing = findViewById(R.id.textView5);
+        textViewFollowers = findViewById(R.id.textViewfollowersNumber);
+        textViewFollowing = findViewById(R.id.textViewFollowingNumber);
 
         listView = findViewById(R.id.listView);
         arrayListUsername = new ArrayList<>();

@@ -21,6 +21,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="#70FFFFFF"
+        android:listSelector="@android:color/transparent"
         app:layout_constraintBottom_toTopOf="@+id/bottom_nav_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

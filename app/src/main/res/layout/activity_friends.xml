@@ -9,7 +9,7 @@
 
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/textViewfollowersNumber"
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginStart="50dp"
@@ -26,7 +26,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/textViewFollowingNumber"
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginStart="250dp"
@@ -58,7 +58,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewfollowersNumber" />
 
     <TextView
         android:id="@+id/textView7"
@@ -76,7 +76,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewFollowingNumber" />
 
     <View
         android:id="@+id/followersLine"
