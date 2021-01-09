@@ -104,16 +104,7 @@ public class RequestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_request);
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.custom_action_bar_with_back);
-        AppCompatImageView appCompatImageView = findViewById(R.id.imageViewBack);
-        appCompatImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(RequestActivity.this, FeedActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+        getSupportActionBar().setCustomView(R.layout.custom_action_bar);
         AppCompatTextView appCompatTextView = findViewById(R.id.title1);
         String temp = "Follow Requests";
         appCompatTextView.setText(temp);

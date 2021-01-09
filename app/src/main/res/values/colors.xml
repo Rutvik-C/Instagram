@@ -12,4 +12,7 @@
     <color name="bg_white">#CCFFFFFF</color>
     <color name="bg_white_light">#1AFFFFFF</color>
     <color name="bg_white_medium">#66FFFFFF</color>
+    <color name="white50">#50FFFFFF</color>
+    <color name="transparent">#00FFFFFF</color>
+
 </resources>

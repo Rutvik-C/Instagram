@@ -42,6 +42,25 @@ public class ViewProfileActivity extends AppCompatActivity {
     Button buttonFollowUnfollow;
     ParseUser currentUser;
     ParseObject currentUserSocial;  // this is the user whose profile is being viewed
+    boolean isAuth = false;
+    private int followers, following;
+    private String userName;
+
+    public void seeSocialStats(View view) {
+        if (isAuth) {
+            Log.i("YAY", "you are authorised");
+
+            Intent intent = new Intent(this, SocialActivity.class);
+            intent.putExtra("username", userName);
+            intent.putExtra("followers", followers);
+            intent.putExtra("following", following);
+
+            startActivity(intent);
+
+        } else {
+            Log.i("Boop", "you are not authorised");
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -130,6 +149,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                 }
             });
 
+
         } else {
             // take back request algo
             currentUserSocial.getList("pendingRequests").remove(ParseUser.getCurrentUser().getUsername());
@@ -162,16 +182,7 @@ public class ViewProfileActivity extends AppCompatActivity {
 
         // Action bar setup
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.custom_action_bar_with_back);
-        AppCompatImageView appCompatImageView = findViewById(R.id.imageViewBack);
-        appCompatImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ViewProfileActivity.this, FeedActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+        getSupportActionBar().setCustomView(R.layout.custom_action_bar);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_bar);
         Menu menu = bottomNavigationView.getMenu();
@@ -209,7 +220,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         // Fetching data
         Intent intent = getIntent();
         boolean isUser = intent.getBooleanExtra("flag", false);
-        String userName = intent.getStringExtra("username");
+        userName = intent.getStringExtra("username");
 
         // Title based on owner or viewer of account
         AppCompatTextView appCompatTextView = findViewById(R.id.title1);
@@ -242,8 +253,10 @@ public class ViewProfileActivity extends AppCompatActivity {
                                 currentUserSocial = objects.get(0);
 
                                 String text;
+                                isAuth = false;
                                 if (currentUserSocial.getList("followers").contains(ParseUser.getCurrentUser().getUsername()) || isUser) {
                                     text = "following";
+                                    isAuth = true;
 
                                     // Getting user posts
                                     ListView userListView = findViewById(R.id.specificPostListView);
@@ -262,10 +275,8 @@ public class ViewProfileActivity extends AppCompatActivity {
                                         @Override
                                         public void done(List<ParseObject> objects, ParseException exception) {
                                             if (exception == null && objects != null) {
-                                                Log.i("INFO", "Here1");
 
                                                 for (ParseObject object : objects) {
-                                                    Log.i("Loop", "In loop now...");
 
                                                     ParseFile file = (ParseFile) object.get("image");
                                                     file.getDataInBackground(new GetDataCallback() {
@@ -284,7 +295,6 @@ public class ViewProfileActivity extends AppCompatActivity {
 
                                                                 userListView.setBackgroundColor(0x80ffffff);
 
-                                                                Log.i("INFO", usernameArrayList.toString());
                                                                 UserFeedAdapter userFeedAdapter = new UserFeedAdapter(ViewProfileActivity.this, usernameArrayList, userPostArrayList, createdOnArrayList, captionArrayList, profileImageArrayList);
                                                                 userListView.setAdapter(userFeedAdapter);
 
@@ -314,10 +324,12 @@ public class ViewProfileActivity extends AppCompatActivity {
                                         if (exception == null && objects != null) {
                                             ParseObject parseObject = objects.get(0);
 
+                                            followers = parseObject.getList("followers").size();
+                                            following = parseObject.getList("follows").size();
                                             TextView textView = findViewById(R.id.textViewfollowersNumber);
-                                            textView.setText(String.valueOf(parseObject.getList("followers").size()));
+                                            textView.setText(String.valueOf(followers));
                                             TextView textView1 = findViewById(R.id.textViewFollowingNumber);
-                                            textView1.setText(String.valueOf(parseObject.getList("follows").size()));
+                                            textView1.setText(String.valueOf(following));
                                         }
                                     }
                                 });

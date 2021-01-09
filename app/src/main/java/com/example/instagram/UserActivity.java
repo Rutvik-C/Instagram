@@ -61,16 +61,7 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_user);
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.custom_action_bar_with_back);
-        AppCompatImageView appCompatImageView = findViewById(R.id.imageViewBack);
-        appCompatImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(UserActivity.this, FeedActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+        getSupportActionBar().setCustomView(R.layout.custom_action_bar);
         AppCompatTextView appCompatTextView = findViewById(R.id.title1);
         String temp = "Search Users";
         appCompatTextView.setText(temp);

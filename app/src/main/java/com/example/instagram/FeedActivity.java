@@ -45,37 +45,6 @@ import java.util.List;
 
 public class FeedActivity extends AppCompatActivity {
 
-//    @Override
-//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//
-//        if (item.getItemId() == R.id.shareButton) {
-//            Intent intent = new Intent(this, UploadImageActivity.class);
-//            startActivity(intent);
-//
-//        } else if (item.getItemId() == R.id.logOut) {
-//            ParseUser.logOut();
-//
-//            Intent intent = new Intent(this, MainActivity.class);
-//            startActivity(intent);
-//
-//        } else if (item.getItemId() == R.id.userButton) {
-//            Intent intent = new Intent(this, UserActivity.class);
-//            startActivity(intent);
-//
-//        } else if (item.getItemId() == R.id.userRequests) {
-//            Intent intent = new Intent(this, RequestActivity.class);
-//            startActivity(intent);
-//
-//        } else if (item.getItemId() == R.id.friends) {
-//            Intent intent = new Intent(this, FriendsActivity.class);
-//            startActivity(intent);
-//
-//        }
-//        finish();
-//
-//        return super.onOptionsItemSelected(item);
-//    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
