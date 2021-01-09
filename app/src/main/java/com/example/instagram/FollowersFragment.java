@@ -1,10 +1,12 @@
 package com.example.instagram;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -74,6 +76,17 @@ public class FollowersFragment extends Fragment {
                     Toast.makeText(getActivity(), exception.getMessage(), Toast.LENGTH_SHORT).show();
                 }
 
+            }
+        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), ViewProfileActivity.class);
+                intent.putExtra("flag", false);
+                intent.putExtra("username", arrayListUsername.get(position));
+
+                startActivity(intent);
             }
         });
 

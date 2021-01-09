@@ -59,7 +59,7 @@ public class SocialActivity extends AppCompatActivity {
         setContentView(R.layout.activity_social);
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.custom_action_bar_with_back);
+        getSupportActionBar().setCustomView(R.layout.custom_action_bar);
         AppCompatTextView appCompatTextView = findViewById(R.id.title1);
         String temp = "Your Friends";
         appCompatTextView.setText(temp);
