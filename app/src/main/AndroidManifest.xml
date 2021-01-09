@@ -17,7 +17,6 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <activity android:name=".SocialActivity"></activity>
-        <activity android:name=".FriendsActivity" />
         <activity android:name=".RequestActivity" />
         <activity android:name=".UploadImageActivity" />
         <activity android:name=".ViewProfileActivity" />
