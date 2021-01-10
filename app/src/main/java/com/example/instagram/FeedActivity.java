@@ -75,22 +75,30 @@ public class FeedActivity extends AppCompatActivity {
                         break;
                     case R.id.search:
                         Intent intent0 = new Intent(FeedActivity.this, UserActivity.class);
+                        intent0.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent0);
+                        finish();
                         break;
                     case R.id.post:
                         Intent intent1 = new Intent(FeedActivity.this, UploadImageActivity.class);
+                        intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent1);
+                        finish();
                         break;
                     case R.id.activity:
                         Intent intent2 = new Intent(FeedActivity.this, RequestActivity.class);
+                        intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent2);
+                        finish();
                         break;
                     case R.id.user:
                         Intent intent3 = new Intent(FeedActivity.this, ViewProfileActivity.class);
+                        intent3.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent3.putExtra("flag", true);
                         intent3.putExtra("username", ParseUser.getCurrentUser().getUsername());
 
                         startActivity(intent3);
+                        finish();
                         break;
                 }
 
@@ -115,7 +123,7 @@ public class FeedActivity extends AppCompatActivity {
                     ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Images");
                     parseQuery.whereNotEqualTo("username", ParseUser.getCurrentUser().getUsername());
                     parseQuery.whereContainedIn("username", arrayList);
-                    parseQuery.addDescendingOrder("createdAt");
+                    parseQuery.addDescendingOrder("dateAndTime");
 
                     parseQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override

@@ -120,20 +120,24 @@ public class RequestActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.home:
                         Intent intent0 = new Intent(RequestActivity.this, FeedActivity.class);
+                        intent0.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent0);
                         break;
                     case R.id.search:
                         Intent intent1 = new Intent(RequestActivity.this, UserActivity.class);
+                        intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent1);
                         break;
                     case R.id.post:
                         Intent intent2 = new Intent(RequestActivity.this, UploadImageActivity.class);
+                        intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent2);
                         break;
                     case R.id.activity:
                         break;
                     case R.id.user:
                         Intent intent3 = new Intent(RequestActivity.this, ViewProfileActivity.class);
+                        intent3.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent3.putExtra("flag", true);
                         intent3.putExtra("username", ParseUser.getCurrentUser().getUsername());
 

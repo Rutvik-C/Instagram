@@ -48,7 +48,6 @@ public class ViewProfileActivity extends AppCompatActivity {
 
     public void seeSocialStats(View view) {
         if (isAuth) {
-            Log.i("YAY", "you are authorised");
 
             Intent intent = new Intent(this, SocialActivity.class);
             intent.putExtra("username", userName);
@@ -56,9 +55,8 @@ public class ViewProfileActivity extends AppCompatActivity {
             intent.putExtra("following", following);
 
             startActivity(intent);
+            finish();
 
-        } else {
-            Log.i("Boop", "you are not authorised");
         }
     }
 
@@ -75,7 +73,9 @@ public class ViewProfileActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.logout) {
             ParseUser.logOut();
             Intent intent = new Intent(this, MainActivity.class);
+
             startActivity(intent);
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -195,18 +195,22 @@ public class ViewProfileActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.home:
                         Intent intent0 = new Intent(ViewProfileActivity.this, FeedActivity.class);
+                        intent0.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent0);
                         break;
                     case R.id.search:
                         Intent intent1 = new Intent(ViewProfileActivity.this, UserActivity.class);
+                        intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent1);
                         break;
                     case R.id.post:
                         Intent intent2 = new Intent(ViewProfileActivity.this, UploadImageActivity.class);
+                        intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent2);
                         break;
                     case R.id.activity:
                         Intent intent3 = new Intent(ViewProfileActivity.this, RequestActivity.class);
+                        intent3.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent3);
                         break;
                     case R.id.user:
@@ -284,7 +288,6 @@ public class ViewProfileActivity extends AppCompatActivity {
                                                         @Override
                                                         public void done(byte[] data, ParseException exception1) {
                                                             if (exception1 == null && data != null) {
-                                                                Log.i("Image", "Got an image");
 
                                                                 Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
                                                                 userPostArrayList.add(bitmap);
