@@ -104,7 +104,7 @@ public class ViewProfileActivity extends AppCompatActivity {
     public void followUnfollow(View view) {
         // Updates database according to follow unfollow requests
 
-        if (buttonFollowUnfollow.getText().equals("follow")) {
+        if (buttonFollowUnfollow.getText().equals("follow") || buttonFollowUnfollow.getText().equals("follow back")) {
             // send follow request algo
 
             currentUserSocial.add("pendingRequests", ParseUser.getCurrentUser().getUsername());
@@ -248,7 +248,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                 if (exception == null && objects != null) {
                     currentUser = objects.get(0);
 
-                    ParseQuery<ParseObject> objectParseQuery = new ParseQuery<ParseObject>("Social");
+                    ParseQuery<ParseObject> objectParseQuery = new ParseQuery<>("Social");
                     objectParseQuery.whereEqualTo("username", currentUser.getUsername());
                     objectParseQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
@@ -313,6 +313,8 @@ public class ViewProfileActivity extends AppCompatActivity {
 
                                 } else if (currentUserSocial.getList("pendingRequests").contains(ParseUser.getCurrentUser().getUsername())) {
                                     text = "requested";
+                                } else if (currentUserSocial.getList("follows").contains(ParseUser.getCurrentUser().getUsername())){
+                                    text = "follow back";
                                 } else {
                                     text = "follow";
                                 }

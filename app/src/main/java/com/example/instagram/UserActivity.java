@@ -122,31 +122,32 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ParseQuery<ParseUser> userParseQuery = ParseUser.getQuery();
-                userParseQuery.whereNotEqualTo("username", ParseUser.getCurrentUser().getUsername());
-                userParseQuery.whereStartsWith("username", s.toString());
-                userParseQuery.addAscendingOrder("username");
+                if (!s.toString().equals("")) {
+                    ParseQuery<ParseUser> userParseQuery = ParseUser.getQuery();
+                    userParseQuery.whereNotEqualTo("username", ParseUser.getCurrentUser().getUsername());
+                    userParseQuery.whereStartsWith("username", s.toString());
+                    userParseQuery.addAscendingOrder("username");
 
-                userParseQuery.findInBackground(new FindCallback<ParseUser>() {
-                    @Override
-                    public void done(List<ParseUser> objects, ParseException exception) {
-                        if (exception == null && objects != null) {
-                            users.clear();
-                            images.clear();
-                            for (ParseUser object : objects) {
-                                users.add(object.getUsername());
-                                images.add(R.drawable.man);
+                    userParseQuery.findInBackground(new FindCallback<ParseUser>() {
+                        @Override
+                        public void done(List<ParseUser> objects, ParseException exception) {
+                            if (exception == null && objects != null) {
+                                users.clear();
+                                images.clear();
+                                for (ParseUser object : objects) {
+                                    users.add(object.getUsername());
+                                    images.add(R.drawable.man);
+                                }
+
+                                myArrayAdapter.notifyDataSetChanged();
+
+                            } else {
+                                Toast.makeText(UserActivity.this, "Unable to load users", Toast.LENGTH_SHORT).show();
+                                Log.i("ERROR", "" + exception);
                             }
-
-                            myArrayAdapter.notifyDataSetChanged();
-
-                        } else {
-                            Toast.makeText(UserActivity.this, "Unable to load users", Toast.LENGTH_SHORT).show();
-                            Log.i("ERROR", "" + exception);
                         }
-                    }
-                });
-
+                    });
+                }
             }
 
             @Override

@@ -32,6 +32,8 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
@@ -113,19 +115,37 @@ public class UploadImageActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+
         if (requestCode == 0 && resultCode == RESULT_OK && data != null) {
+            Log.i("ACT RES", "Picker");
             Uri imageLocation = data.getData();
+
+            CropImage.activity(imageLocation)
+                    .setGuidelines(CropImageView.Guidelines.ON)
+                    .setCropShape(CropImageView.CropShape.RECTANGLE)
+                    .setAspectRatio(1, 1)
+                    .start(this);
+
+        }
+
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            Log.i("ACT RES", "Cropper");
+
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+
+            Uri uri = result.getUri();
+
+
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageLocation);
-                Log.i("Success", "Image ready!");
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
 
                 imageViewPost.setImageBitmap(bitmap);
 
-            } catch (Exception exception) {
-                exception.printStackTrace();
-                Toast.makeText(this, "Error Fetching Image", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
+
     }
 
     @Override

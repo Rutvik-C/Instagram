@@ -10,7 +10,8 @@
         android:layout_width="30dp"
         android:layout_height="match_parent"
         android:foregroundGravity="center_vertical"
-        app:srcCompat="@drawable/abc_vector_test" />
+        android:padding="0dp"
+        app:srcCompat="@drawable/man" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/title1"
@@ -19,6 +20,9 @@
         android:layout_height="wrap_content"
         android:foregroundGravity="left"
         android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:paddingTop="1dp"
+        android:paddingBottom="1dp"
         android:text="Instagram"
         android:textColor="@color/white"
         android:textSize="25sp"

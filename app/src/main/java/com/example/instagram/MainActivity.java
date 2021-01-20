@@ -101,7 +101,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             @Override
                             public void done(ParseException ex) {
                                 if (ex == null) {
-                                    launchUserActivity();
+                                    ParseObject parseObject1 = new ParseObject("Chats");
+                                    parseObject1.put("username", username);
+                                    parseObject1.put("messages", new ArrayList<String>());
+                                    parseObject1.saveInBackground(new SaveCallback() {
+                                        @Override
+                                        public void done(ParseException exception1) {
+                                            if (exception1 == null) {
+                                                launchUserActivity();
+                                            } else {
+                                                Toast.makeText(MainActivity.this, "Failed to Sign In\nTry again after some time", Toast.LENGTH_SHORT).show();
+                                                Log.i("Failed", "sign up failed " + exception1);
+                                            }
+                                        }
+                                    });
+
                                 } else {
                                     Toast.makeText(MainActivity.this, "Failed to Sign In\nTry again after some time", Toast.LENGTH_SHORT).show();
                                     Log.i("Failed", "sign up failed " + ex);
@@ -196,9 +210,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editTextPasswordSignupAgain.setOnKeyListener(this);  // --"-- sign up --"--
 
 
-        if (ParseUser.getCurrentUser() != null) {
-            launchUserActivity();
-        }
+        Intent intent = new Intent(this, ChatActivity.class);
+        startActivity(intent);
+//        if (ParseUser.getCurrentUser() != null) {
+//            launchUserActivity();
+//        }
 
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
     }
