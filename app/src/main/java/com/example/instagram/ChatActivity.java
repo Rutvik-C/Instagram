@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.strictmode.SqliteObjectLeakedViolation;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -30,6 +32,8 @@ public class ChatActivity extends AppCompatActivity {
 
     ListView chatListView;
     ArrayList<String> chatArrayList;
+    ArrayList<Boolean> boolArrayList;
+    ChatAdapter chatAdapter;
     ArrayAdapter<String> arrayAdapter;
     private SQLiteDatabase database;
     String chattingWith, currentUser;
@@ -47,9 +51,11 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 public void done(ParseException exception) {
                     if (exception == null) {
-                        database.execSQL(String.format("INSERT INTO table_%s(chatter, text_message) VALUES ('%s', '%s')", chattingWith, currentUser, text));
-                        chatArrayList.add(currentUser + ":\n" + text);
-                        arrayAdapter.notifyDataSetChanged();
+                        database.execSQL(String.format("INSERT INTO table_%s(chatter, text_message) VALUES ('%s', '%s')", chattingWith, currentUser, text.replace("'", "''")));
+                        chatArrayList.add(text);
+                        boolArrayList.add(true); // user itself
+
+                        chatAdapter.notifyDataSetChanged();
                     } else {
                         Toast.makeText(ChatActivity.this, "Failed to send message!", Toast.LENGTH_SHORT).show();
                     }
@@ -105,65 +111,76 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().setCustomView(R.layout.custom_action_bar_with_profile);
         AppCompatTextView appCompatTextView = findViewById(R.id.title1);
 
-//        chattingWith = "rutvik"; // will come through intent
-//        currentUser = "neelam"; // ParseUser.getCurrentUser().getUsername()
-        chattingWith = "neelam";
-        currentUser = "rutvik";
-
+        chattingWith = "rutvik"; // will come through intent
+        currentUser = "neelam"; // ParseUser.getCurrentUser().getUsername()
+//        chattingWith = "neelam";
+//        currentUser = "rutvik";
 
         appCompatTextView.setText(chattingWith);
 
         chatListView = findViewById(R.id.listViewChats);
         chatArrayList = new ArrayList<>();
-        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, chatArrayList);
-        chatListView.setAdapter(arrayAdapter);
+        boolArrayList = new ArrayList<>();
+        chatAdapter = new ChatAdapter(this, chatArrayList, boolArrayList);
+        chatListView.setAdapter(chatAdapter);
+
+//        this.deleteDatabase("ChatDatabase_neelam");
+//        this.deleteDatabase("ChatDatabase_rutvik");
+//        Log.i("DELETE", "deleted!");
 
         database = this.openOrCreateDatabase("ChatDatabase_" + currentUser, MODE_PRIVATE, null);
         database.execSQL(String.format("CREATE TABLE IF NOT EXISTS table_%s (text_id INTEGER PRIMARY KEY AUTOINCREMENT, chatter VARCHAR, text_message VARCHAR)", chattingWith));
 
         searchOrCreateChatObject();
 
+        @SuppressLint("Recycle") Cursor cursor = database.rawQuery(String.format("SELECT * FROM (SELECT * FROM table_%s ORDER BY text_id DESC LIMIT 30) Var1 ORDER BY text_id ASC", chattingWith), null);
+        int chatterColumnIndex = cursor.getColumnIndex("chatter");
+        int messageColumnIndex = cursor.getColumnIndex("text_message");
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            chatArrayList.add(cursor.getString(messageColumnIndex));
+            boolArrayList.add(cursor.getString(chatterColumnIndex).equals(currentUser));
+
+            chatAdapter.notifyDataSetChanged();
+            cursor.moveToNext();
+        }
+
         // fetch messages
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Chats");
-        parseQuery.whereEqualTo("from_to", chattingWith + "->" + currentUser);
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
             @Override
-            public void done(List<ParseObject> objects, ParseException exception) {
-                if (exception == null && objects != null && objects.size() > 0) {
-                    Log.i("Extracting", chattingWith + "->" + currentUser);
+            public void run() {
+                ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Chats");
+                parseQuery.whereEqualTo("from_to", chattingWith + "->" + currentUser);
+                parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException exception) {
+                        if (exception == null && objects != null && objects.size() > 0) {
+                            Log.i("Extracting", chattingWith + "->" + currentUser);
 
-                    List<String> tempList = objects.get(0).getList("messages");
-                    objects.get(0).remove("messages");
-                    objects.get(0).put("messages", new ArrayList<String>());
-                    objects.get(0).saveInBackground();
-                    for (String message : tempList) {
-                        database.execSQL(String.format("INSERT INTO table_%s(chatter, text_message) VALUES ('%s', '%s')", chattingWith, chattingWith, message));
+                            List<String> tempList = objects.get(0).getList("messages");
+                            objects.get(0).remove("messages");
+                            objects.get(0).put("messages", new ArrayList<String>());
+                            objects.get(0).saveInBackground();
+
+                            for (String message : tempList) {
+                                database.execSQL(String.format("INSERT INTO table_%s(chatter, text_message) VALUES ('%s', '%s')", chattingWith, chattingWith, message.replace("'", "''")));
+
+                                chatArrayList.add(message);
+                                boolArrayList.add(false);
+
+                                chatAdapter.notifyDataSetChanged();
+                            }
+                        }
                     }
+                });
 
-                    Log.i("List", tempList.toString());
-                    @SuppressLint("Recycle") Cursor cursor = database.rawQuery(String.format("SELECT * FROM (SELECT * FROM table_%s ORDER BY text_id DESC LIMIT 30) Var1 ORDER BY text_id ASC", chattingWith), null);
-                    int chatterColumnIndex = cursor.getColumnIndex("chatter");
-                    int messageColumnIndex = cursor.getColumnIndex("text_message");
-
-                    cursor.moveToFirst();
-                    while (!cursor.isAfterLast()) {
-                        chatArrayList.add(cursor.getString(chatterColumnIndex) + ":\n" + cursor.getString(messageColumnIndex));
-
-                        arrayAdapter.notifyDataSetChanged();
-                        cursor.moveToNext();
-                    }
-                }
+                handler.postDelayed(this, 1000);
             }
-        });
-
-        // fetch updates from server and push it to db and then delete from server
-//        String message = "Wohoo";
-//        database.execSQL(String.format("INSERT INTO table_%s(chatter, text_message) VALUES ('%s', '%s')", chattingWith, chattingWith, message));
-//        message = "YAY";
-//        database.execSQL(String.format("INSERT INTO table_%s(chatter, text_message) VALUES ('%s', '%s')", chattingWith, currentUser, message));
-
-        // fetch last n messages from db
-
+        };
+        handler.post(runnable);
+        Log.i("RUNN", "set");
 
     }
 }
