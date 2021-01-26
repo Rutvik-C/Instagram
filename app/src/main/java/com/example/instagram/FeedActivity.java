@@ -4,8 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -45,21 +48,36 @@ import java.util.List;
 
 public class FeedActivity extends AppCompatActivity {
 
+    SectionStatePagerAdapter sectionStatePagerAdapter;
+    static ViewPager viewPager;
+    static AppCompatImageView backButtonImage, chatButtonImage;
+    static AppCompatTextView appCompatTextView;
+
+
+    public void chats(View view) {
+        viewPager.setCurrentItem(1);
+        chatButtonImage.setVisibility(View.INVISIBLE);
+        backButtonImage.setVisibility(View.VISIBLE);
+    }
+
+    public void back(View view) {
+        viewPager.setCurrentItem(0);
+        chatButtonImage.setVisibility(View.VISIBLE);
+        backButtonImage.setVisibility(View.INVISIBLE);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.custom_action_bar);
+        getSupportActionBar().setCustomView(R.layout.custom_action_bar_with_rightcornerbutton);
+        backButtonImage = findViewById(R.id.backButton);
+        chatButtonImage = findViewById(R.id.chatButton);
+        backButtonImage.setVisibility(View.INVISIBLE);
 
-        ListView feedListView = findViewById(R.id.feedListView);
-
-        ArrayList<String> usernameArrayList = new ArrayList<>();
-        ArrayList<Bitmap> userPostArrayList = new ArrayList<>();
-        ArrayList<String> createdOnArrayList = new ArrayList<>();
-        ArrayList<Integer> profileImageArrayList = new ArrayList<>();
-        ArrayList<String> captionArrayList = new ArrayList<>();
+        appCompatTextView = findViewById(R.id.title1);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_bar);
         Menu menu = bottomNavigationView.getMenu();
@@ -106,62 +124,13 @@ public class FeedActivity extends AppCompatActivity {
             }
         });
 
+        viewPager = findViewById(R.id.feedViewPager);
+        sectionStatePagerAdapter = new SectionStatePagerAdapter(getSupportFragmentManager());
+        sectionStatePagerAdapter.addFragment(new FeedFragment(), "feed");
+        sectionStatePagerAdapter.addFragment(new ChatFragment(), "chats");
 
-        ArrayList<String> arrayList = new ArrayList<>();
-        ParseQuery<ParseObject> objectParseQuery = new ParseQuery<ParseObject>("Social");
-        objectParseQuery.whereEqualTo("username", ParseUser.getCurrentUser().getUsername());
-        objectParseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException exception) {
-                if (exception == null && objects != null) {
-                    ParseObject parseObject = objects.get(0);
+        viewPager.setAdapter(sectionStatePagerAdapter);
+        viewPager.setCurrentItem(0);
 
-                    for (Object username : parseObject.getList("follows")) {
-                        arrayList.add(username.toString());
-                    }
-
-                    ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Images");
-                    parseQuery.whereNotEqualTo("username", ParseUser.getCurrentUser().getUsername());
-                    parseQuery.whereContainedIn("username", arrayList);
-                    parseQuery.addDescendingOrder("dateAndTime");
-
-                    parseQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> objects, ParseException exception) {
-                            if (exception == null && objects != null) {
-
-                                for (ParseObject object : objects) {
-
-                                    ParseFile file = (ParseFile) object.get("image");
-                                    file.getDataInBackground(new GetDataCallback() {
-                                        @Override
-                                        public void done(byte[] data, ParseException exception1) {
-                                            if (exception1 == null && data != null) {
-
-                                                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                                                userPostArrayList.add(bitmap);
-                                                usernameArrayList.add(object.getString("username"));
-                                                createdOnArrayList.add(object.getString("dateAndTime"));
-                                                captionArrayList.add(object.getString("caption"));
-                                                profileImageArrayList.add(R.drawable.man);
-
-                                                UserFeedAdapter userFeedAdapter = new UserFeedAdapter(FeedActivity.this, usernameArrayList, userPostArrayList, createdOnArrayList, captionArrayList, profileImageArrayList);
-                                                feedListView.setAdapter(userFeedAdapter);
-
-                                            } else {
-                                                Log.i("Error In", "" + exception1);
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    });
-                } else {
-                    Toast.makeText(FeedActivity.this, "Unable to find your social account\n" + exception.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
     }
 }

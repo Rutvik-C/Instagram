@@ -210,11 +210,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editTextPasswordSignupAgain.setOnKeyListener(this);  // --"-- sign up --"--
 
 
-        Intent intent = new Intent(this, ChatActivity.class);
-        startActivity(intent);
-//        if (ParseUser.getCurrentUser() != null) {
-//            launchUserActivity();
-//        }
+//        Intent intent = new Intent(this, ChatActivity.class);
+//        startActivity(intent);
+        if (ParseUser.getCurrentUser() != null) {
+            launchUserActivity();
+        }
 
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
     }

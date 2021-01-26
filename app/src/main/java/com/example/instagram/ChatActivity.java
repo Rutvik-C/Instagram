@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -111,10 +112,9 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().setCustomView(R.layout.custom_action_bar_with_profile);
         AppCompatTextView appCompatTextView = findViewById(R.id.title1);
 
-        chattingWith = "rutvik"; // will come through intent
-        currentUser = "neelam"; // ParseUser.getCurrentUser().getUsername()
-//        chattingWith = "neelam";
-//        currentUser = "rutvik";
+        Intent intent = getIntent();
+        chattingWith = intent.getStringExtra("chattingWith");
+        currentUser = ParseUser.getCurrentUser().getUsername();
 
         appCompatTextView.setText(chattingWith);
 
@@ -124,9 +124,6 @@ public class ChatActivity extends AppCompatActivity {
         chatAdapter = new ChatAdapter(this, chatArrayList, boolArrayList);
         chatListView.setAdapter(chatAdapter);
 
-//        this.deleteDatabase("ChatDatabase_neelam");
-//        this.deleteDatabase("ChatDatabase_rutvik");
-//        Log.i("DELETE", "deleted!");
 
         database = this.openOrCreateDatabase("ChatDatabase_" + currentUser, MODE_PRIVATE, null);
         database.execSQL(String.format("CREATE TABLE IF NOT EXISTS table_%s (text_id INTEGER PRIMARY KEY AUTOINCREMENT, chatter VARCHAR, text_message VARCHAR)", chattingWith));
